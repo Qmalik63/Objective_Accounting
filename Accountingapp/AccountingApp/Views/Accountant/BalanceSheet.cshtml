@@ -1,0 +1,489 @@
+﻿@model List<AccountingApp.Models.ChartOfAcc>
+@{
+    ViewBag.Title = "Balance Sheet";
+    Layout = "~/Views/Shared/_Layout_Accountant.cshtml";
+    //Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <link href="~/Scripts/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <style>
+
+        .form_datetime {
+            display: block;
+            width: 40%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    @*<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />*@
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+    <style>
+    </style>
+</head>
+
+<body>
+
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" style="margin-right: 1%" data-target="#myModal">Generate Report</button>
+    <button class="btn btn-info btn-lg" id="cmd">Generate PDF</button>
+    <br />
+    <br />
+    @*Amnah*@
+    <div class="shadow container" style="width:87%; background-color:gainsboro;">
+        <div class="card-columns" style="width:100%; column-count:1; padding-top:20px;">
+            <div class="card" id="printContent" style="text-align:center;">
+                <div class="card-body">
+                    <h4 class="card-title" style="padding: 0px; margin: 0px;">Addams & Family Inc.</h4>
+                    <h4 class="card-title" style="padding: 0px; margin: 0px;">Balance Sheet</h4>
+                    @*<hr style="padding: 0px; margin: 0px;" />*@
+                    <h4 style="padding: 0px; margin: 0px;">
+                        As of
+                        <script>
+                            var options = { year: 'numeric', month: 'long', day: 'numeric' };
+                            var date = new Date(Date.parse('@ViewBag.DisplayDate'));
+                            document.write(date.toLocaleDateString("en-US", options))
+                        </script>
+                    </h4>
+                    @*<br />*@
+                    <hr style="border-width: 2px; border-color: black" />
+                    <div align="center">
+                        <table id="assetsTable" class="table table-hover" style="width:100%;">
+
+                            <tr class="titleRow">
+                                <th class="text-left" colspan="3">Assets</th>
+                            </tr>
+
+                            <tr>
+                                <th class="text-left" colspan="3" style="text-indent: 2%">&nbsp;&nbsp;&nbsp; Current Assets</th>
+                            </tr>
+
+
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                if (Model[i].AccountType.ToLower() == "asset")
+                                {
+                                    if (Model[i].AccountName.ToLower() != "office supplies")
+                                    {
+                                        <tr>
+                                            <td align="left" style="text-indent: 8%; color: blue"><a href="/Manager/GeneralLedger?name=@Model[i].AccountName">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Model[i].AccountName</a></td>
+                                            <td style="text-align: right; width: 135px">@Model[i].CurrentBalance</td>
+                                            <td> </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            <tr>
+                                <th class="text-left" style="text-indent: 4%">&nbsp;&nbsp;&nbsp;Total Current Assets</th>
+                                <td style="border-top: .15rem solid"> </td>
+                                <td style="border-bottom: .4rem double; text-align: right">@ViewBag.totalCurrentAssets</td>
+                            </tr>
+
+                            <tr>
+                                <th class="text-left" style="text-indent: 3%">&nbsp;&nbsp;&nbsp;Property Plant & Equipment</th>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                if (Model[i].AccountName.ToLower() == "office supplies" || Model[i].AccountName.ToLower() == "accumulated depreciation equipment")
+                                {
+                                    <tr>
+                                        <td align="left" style="text-indent: 8%; color:blue"><a href="/Manager/GeneralLedger?name=@Model[i].AccountName">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Model[i].AccountName</a></td>
+                                        @if (Model[i].AccountName.ToLower() != "accumulated depreciation equipment")
+                                        {
+                                            <td style="text-align: right; width: 135px">@Model[i].CurrentBalance</td>
+                                        }
+                                        else
+                                        {
+                                            <td style="border-bottom: .15rem solid; text-align: right; width: 135px">(@Model[i].CurrentBalance)</td>
+                                        }
+                                        <td> </td>
+                                    </tr>
+                                }
+                            }
+
+                            <tr>
+                                <th class="text-left" style="text-indent: 4%;">&nbsp;&nbsp;&nbsp;Property Plant & Equipment, Net</th>
+                                <td></td>
+                                <td style="text-align: right; width: 135px">@ViewBag.propPlanEquipNet</td>
+                            </tr>
+
+                            <tr>
+                                <th class="text-left">Total Assets</th>
+                                <td> </td>
+                                <td style="border-top: .15rem solid; border-bottom: .4rem double; text-align: right; width: 135px">@ViewBag.totalAssets</td>
+                            </tr>
+                        </table>
+
+                        <br />
+
+                        <table id="liabilitiesTable" class="table table-hover" style="width:100%;">
+
+                            <tr class="titleRow">
+                                <th class="text-left">Liabilities & Stockholder's Equity</th>
+                                <th> </th>
+                                <th> </th>
+                            </tr>
+
+                            <tr>
+                                <th class="text-left" style="text-indent: 4%;">&nbsp;&nbsp;&nbsp;Current Liabilities</th>
+                                <th> </th>
+                                <th> </th>
+                            </tr>
+
+
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                if (Model[i].AccountType.ToLower() == "liability")
+                                {
+
+                                    if (Model[i].AccountName.ToLower() != "unearned revenue" && Model[i].AccountName.ToLower() != "accumulated depreciation equipment")
+                                    {
+                                        <tr>
+                                            <td align="left" style="text-indent: 8%; color: blue"><a href="/Manager/GeneralLedger?name=@Model[i].AccountName">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@Model[i].AccountName</a></td>
+                                            <td align="right" style="width: 135px">@Model[i].CurrentBalance</td>
+                                            <td> </td>
+                                        </tr>
+                                    }
+
+                                    else if (Model[i].AccountName.ToLower() != "accumulated depreciation equipment")
+                                    {
+                                        <tr>
+                                            <td align="left" style="text-indent:4%;"><b>&nbsp;&nbsp;&nbsp;@Model[i].AccountName</b></td>
+                                            <td align="right" style="border-bottom: .15rem solid; width: 135px">@Model[i].CurrentBalance</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+
+                                }
+                            }
+                            <tr>
+                                <td align="left" style="text-indent: 4%;"><b>&nbsp;&nbsp;&nbsp;Total Current Liabilities</b></td>
+                                <td> </td>
+                                <td align="right" style="width: 135px">@ViewBag.totalCurrentLiabilities</td>
+                            </tr>
+                            <tr>
+                                <td align="left"><b>Total Liabilities</b></td>
+                                <td> </td>
+                                <td style="border-top: .15rem solid; border-bottom: .4rem double; text-align: right; width: 135px">@ViewBag.totalLiabilities</td>
+                            </tr>
+                            <tr height=20px>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th class="text-left">Stockholders' Equity</th>
+                                <td></td>
+                                <td></td>
+                            </tr>
+
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                if (Model[i].AccountName.ToLower() == "contributed capital")
+                                {
+                                    <tr>
+
+                                        <td align="left" style="text-indent: 4%; color: blue"><a href="/Manager/GeneralLedger?name=@Model[i].AccountName">&nbsp;&nbsp;&nbsp;@Model[i].AccountName</a></td>
+                                        <td></td>
+                                        <td style="text-align: right; width: 135px">@Model[i].CurrentBalance</td>
+
+
+                                    </tr>
+                                }
+                            }
+
+                            <tr>
+                                <td align="left" style="text-indent: 4%; color: blue"><a href="/Accountant/GeneralLedger?name=Retained Earnings">&nbsp;&nbsp;&nbsp;Retained Earnings</a></td>
+                                <td> </td>
+                                <td style="text-align: right; width: 135px">@ViewBag.retainedEarnings</td>
+                            </tr>
+
+                            <tr>
+                                <th class="text-left">Total Stockholders' Equity</th>
+                                <td> </td>
+                                <td style="border-top: .15rem solid; border-bottom: .4rem double; text-align: right; width: 135px">@ViewBag.totalStockHolderEquity</td>
+                            </tr>
+                            <tr height=20px>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th class="text-left">Total Liabilities & Stockholders' Equity</th>
+                                <td> </td>
+                                <td style="border-bottom: .4rem double; text-align: right">@ViewBag.totalLiabilitesStockEquity</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                    <h4 class="modal-title">Generate Report By Date</h4>
+                </div>
+                <div class="modal-body">
+                    <h5>Select a Date:</h5>
+                    <input type="text" id="Date" onkeydown="return false;" autocomplete="off" class="form_datetime" style="text-align:right" value="" placeholder="mm/dd/yyyy">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="GenerateReport" onclick="LoadGeneratedReportDate()" class="btn btn-success" data-dismiss="modal">Generate</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @Scripts.Render("~/Scripts/jquery-1.8.3.min.js")
+    @Scripts.Render("~/Scripts/bootstrap.min.js")
+    @Scripts.Render("~/Scripts/bootstrap-datetimepicker.js")
+
+    <script type="text/javascript">
+        $('.form_datetime').datetimepicker({
+            format: "m/d/yyyy",
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,  //this parameter removes the time selection, documentation: https://www.malot.fr/bootstrap-datetimepicker/
+            forceParse: 0,
+            showMeridian: 1
+        });
+    </script>
+
+    <script>
+
+        function LoadGeneratedReportDate() {
+
+            var selectedDate = document.getElementById("Date").value;
+
+            window.location.href = '../Accountant/BalanceSheet?until=' + selectedDate;
+
+
+        }
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/html2pdf.bundle.min.js"></script>
+
+
+    <script>
+        $('#cmd').click(function () {
+            var element = document.getElementById('printContent');
+            var opt = {
+                margin: 1,
+                filename: 'BalanceSheet.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            FormatTableAmounts();
+
+            PlaceDollarSigns();
+
+            //Populate date field with today
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+
+            today = mm + '/' + dd + '/' + yyyy;
+
+            var d = document.getElementById("Date");
+            d.value = today;
+        });
+    </script>
+
+    <script>
+
+        function FormatTableAmounts() {
+            var table = document.getElementById("assetsTable");
+            var table2 = document.getElementById("liabilitiesTable");
+
+            for (var i = 2; i < table.rows.length; i++) {
+                var Dhtml = table.rows[i].cells[1].innerText;
+                var Chtml = table.rows[i].cells[2].innerText;
+
+                var newDhtml = Dhtml.replace("$", "");
+                var newChtml = Chtml.replace("$", "");
+
+                if (Dhtml.includes("(")) {
+                    var x = Dhtml.replace("(", "");
+                    var x2 = x.replace(")", "");
+                    table.rows[i].cells[1].innerText = "(" + formatMoney(x2) + ")";
+                } else {
+
+                    if (newDhtml != "") {
+                        table.rows[i].cells[1].innerText = formatMoney(newDhtml);
+                    }
+
+                    if (newChtml != "") {
+                        table.rows[i].cells[2].innerText = formatMoney(newChtml);
+                    }
+                }
+
+            }
+
+
+            for (var j = 2; j < table2.rows.length; j++) {
+                var Dhtml = table2.rows[j].cells[1].innerText;
+                var Chtml = table2.rows[j].cells[2].innerText;
+
+                var newDhtml = Dhtml.replace("$", "");
+                var newChtml = Chtml.replace("$", "");
+
+                if (Dhtml.includes("(")) {
+                    var x = Dhtml.replace("(", "");
+                    var x2 = x.replace(")", "");
+                    table2.rows[j].cells[1].innerText = formatMoney(x2);
+                    table2.rows[j].cells[1].innerText = "(" + formatMoney(x2) + ")";
+                } else {
+
+                    if (newDhtml != "") {
+                        table2.rows[j].cells[1].innerText = formatMoney(newDhtml);
+                    }
+
+                    if (newChtml != "") {
+                        table2.rows[j].cells[2].innerText = formatMoney(newChtml);
+                    }
+                }
+
+            }
+
+        }
+
+        function formatMoney(n, c, d, t) {
+            var c = isNaN(c = Math.abs(c)) ? 2 : c,
+                d = d == undefined ? "." : d,
+                t = t == undefined ? "," : t,
+                s = n < 0 ? "-" : "",
+                i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))),
+                j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+        };
+
+        function PlaceDollarSigns() {
+            var table = document.getElementById("assetsTable");
+
+            //Place dollar sign for debit
+            for (var i = 2; i < table.rows.length; i++) {
+                var Dhtml = table.rows[i].cells[1].innerText;
+
+                if (Dhtml != "") {
+
+                    table.rows[i].cells[1].innerText = "$ " + Dhtml;
+
+
+                    break;
+                }
+
+            }
+
+            //Place dollar sign for credit
+            for (var i = 2; i < table.rows.length; i++) {
+                var Chtml = table.rows[i].cells[2].innerText;
+
+
+                if (Chtml != "") {
+
+                    table.rows[i].cells[2].innerText = "$ " + Chtml;
+
+
+                    break;
+                }
+            }
+
+            //var TotalDebit = table.rows[rowsNum - 1].cells[1].innerText;
+            var TotalCredit = table.rows[table.rows.length - 1].cells[2].innerText;
+
+            //table.rows[rowsNum - 1].cells[1].innerText = "$ " + TotalDebit;
+            table.rows[table.rows.length - 1].cells[2].innerText = "$ " + TotalCredit;
+
+            var table2 = document.getElementById("liabilitiesTable");
+
+            //Place dollar sign for debit
+            for (var i = 2; i < table2.rows.length; i++) {
+                var Dhtml = table2.rows[i].cells[1].innerText;
+
+                if (Dhtml != "") {
+
+                    table2.rows[i].cells[1].innerText = "$ " + Dhtml;
+
+
+                    break;
+                }
+
+            }
+
+            //Place dollar sign for credit
+            for (var i = 2; i < table2.rows.length; i++) {
+                var Chtml = table2.rows[i].cells[2].innerText;
+
+
+                if (Chtml != "") {
+
+                    table2.rows[i].cells[2].innerText = "$ " + Chtml;
+
+
+                    break;
+                }
+            }
+
+            //var TotalDebit = table.rows[rowsNum - 1].cells[1].innerText;
+            var TotalCredit = table2.rows[table2.rows.length - 1].cells[2].innerText;
+
+            //table.rows[rowsNum - 1].cells[1].innerText = "$ " + TotalDebit;
+            table2.rows[table2.rows.length - 1].cells[2].innerText = "$ " + TotalCredit;
+        }
+
+    </script>
+
+</body>
+
+</html>
+

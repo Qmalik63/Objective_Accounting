@@ -1,0 +1,381 @@
+﻿
+@model AccountingApp.Models.LoginModel
+@{
+    Layout = null;
+}
+@Styles.Render("~/Content/css")
+@Scripts.Render("~/bundles/modernizr")
+@{
+    ViewBag.Title = "Log In";
+}
+
+@*@if (Model != null)
+    {
+        <script type="text/javascript">
+            alert("Invalid Credentials");
+        </script>
+    }*@
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link href="//use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" />
+    <style>
+        #login-div {
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            padding: 10px 10px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /*background-image: url('../../img/ac.jpg');*/
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            /*background-size: cover;*/
+            /*background-size: contain;
+            background-position: center;*/
+            background-color: gainsboro;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 18px;
+        }
+                
+        .login-box {
+            width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 40%;
+            transform: translate(0%,-50%);
+            color: dodgerblue;
+            border-radius: 10px;
+            background-color: #FFFFFF;
+            padding-left: 31px;
+            padding-right: 31px;
+            padding-top: 25px;
+            padding-bottom: 20px;
+            border-style: solid;
+            border-width: 5px;
+            opacity: 0.9;
+            border-color: #1202FF;
+            animation: 1s ease-out 0s 1 slideInFromTop;
+        }
+
+        @@keyframes slideInFromTop {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(-50%);
+            }
+        }
+
+
+            .login-box h2 {
+                float: right;
+                font-size: 40px;
+                border-bottom: 4px solid #1388D2;
+                margin-bottom: 50px;
+                padding: 13px 0;
+            }
+
+        .textbox {
+            width: 100%;
+            overflow: hidden;
+            font-size: 20px;
+            padding: 8px 0;
+            margin: 8px 0;
+            border: 2px solid dodgerblue;
+            border-radius: 6px;
+        }
+
+            .textbox i {
+                width: 26px;
+                float: left;
+                text-align: center;
+            }
+
+            .textbox input {
+                border: none;
+                outline: none;
+                background: none;
+                color: black;
+                font-size: 18px;
+                width: 100%;
+                float: left;
+                margin: 0 10px;
+            }
+
+        .btn {
+            width: 100%;
+            background: none;
+            background-color: dodgerblue;
+            border: 2px solid #606c88;
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 12px 0;
+        }
+
+        .reset a {
+            color: dodgerblue;
+        }
+
+        a {
+            color: #0000ff;
+            font-family: Arial;
+            font-size: 15px;
+        }
+
+        #hiddenreset {
+            padding: 20px;
+            text-align: center;
+            background-color: #C9C9C9;
+            border-radius: 10px;
+            box-shadow: 10px 10px 5px grey;
+            display: none;
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+
+        .forgotBtn {
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #ffffff));
+            background: -moz-linear-gradient(top, #ffffff 5%, #ffffff 100%);
+            background: -webkit-linear-gradient(top, #ffffff 5%, #ffffff 100%);
+            background: -o-linear-gradient(top, #ffffff 5%, #ffffff 100%);
+            /*background: -ms-linear-gradient(top, #ffffff 5%, #ffffff 100%);*/
+            background: linear-gradient(to bottom, #ffffff 5%, #ffffff 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0);
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
+            display: inline-block;
+            cursor: pointer;
+            color: #0000ff;
+            font-family: Arial;
+            font-size: 15px;
+            padding: 3px 0px;
+            text-decoration: none;
+        }
+
+            .forgotBtn:hover {
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #ffffff));
+                background: -moz-linear-gradient(top, #ffffff 5%, #ffffff 100%);
+                background: -webkit-linear-gradient(top, #ffffff 5%, #ffffff 100%);
+                background: -o-linear-gradient(top, #ffffff 5%, #ffffff 100%);
+                /*background: -ms-linear-gradient(top, #ffffff 5%, #ffffff 100%);*/
+                background: linear-gradient(to bottom, #ffffff 5%, #ffffff 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ffffff',GradientType=0);
+                background-color: #ffffff;
+            }
+
+            .forgotBtn:active {
+                position: relative;
+                top: 1px;
+            }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 95%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #26759e;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        .submitbtn {
+            width: 100%;
+            background: none;
+            background-color: white;
+            border: 2px solid #1388D2;
+            color: black;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 12px 0;
+        }
+
+        .button_example {
+            width: 100%;
+            border: 2px solid #25729a;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            font-size: 20px;
+            font-family: arial;
+            padding: 10px 10px 10px 10px;
+            text-decoration: none;
+            display: inline-block;
+            text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+            font-weight: bold;
+            color: #FFFFFF;
+            background-color: #3093c7;
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#3093c7), to(#1c5a85));
+            background-image: -webkit-linear-gradient(top, #3093c7, #1c5a85);
+            background-image: -moz-linear-gradient(top, #3093c7, #1c5a85);
+            /*background-image: -ms-linear-gradient(top, #3093c7, #1c5a85);*/
+            background-image: -o-linear-gradient(top, #3093c7, #1c5a85);
+            background-image: linear-gradient(to bottom, #3093c7, #1c5a85);
+            filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#3093c7, endColorstr=#1c5a85);
+        }
+
+            .button_example:hover {
+                border: 2px solid #1c5675;
+                background-color: #26759e;
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#26759e), to(#133d5b));
+                background-image: -webkit-linear-gradient(top, #26759e, #133d5b);
+                background-image: -moz-linear-gradient(top, #26759e, #133d5b);
+                /*background-image: -ms-linear-gradient(top, #26759e, #133d5b);*/
+                background-image: -o-linear-gradient(top, #26759e, #133d5b);
+                background-image: linear-gradient(to bottom, #26759e, #133d5b);
+                filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#26759e, endColorstr=#133d5b);
+            }
+    </style>
+</head>
+
+
+
+<div class="container-fluid">
+    <div id="login-box">
+        <div class="login-box">
+            @using (Html.BeginForm("Authenticate", "Account", FormMethod.Post))
+            {
+                <img src="~/img/Accounting Logo.PNG" alt="Logo" width="330" height="110" />
+                <h1 style="color:dodgerblue;border-bottom: 4px solid dodgerblue;padding: 5px">Login</h1><br />
+                <i class="fas fa-user"></i>
+                @Html.LabelFor(model => model.Username)
+                <div class="textbox">
+
+                    @Html.EditorFor(model => model.Username)
+                </div>
+
+                <div style="color:red;font-size:14px;padding: 3px">
+                    @Html.ValidationMessageFor(model => Model.Username)
+                </div>
+                <br />
+                <i class="fas fa-lock"></i>
+                @Html.LabelFor(model => model.Password)
+                <div class="textbox">
+                    @Html.EditorFor(model => model.Password)
+                </div>
+
+                <div style="color:red;font-size:14px;padding: 3px">
+                    @Html.ValidationMessageFor(model => Model.Password)
+                </div>
+                <br />
+
+                <input type="submit" name="Login" value="Login" class="button_example  margin-left" />
+            }
+
+            <!-- Trigger/Open The Modal -->
+            <button id="forgotBtn" class="forgotBtn" onclick="displayToggle()">Forgot Password?</button>
+
+            <br />
+            <div>
+                @Html.ActionLink("Account Recovery", "AccountRecovery")
+            </div>
+
+            <!-- The Modal -->
+            <div id="myModal" class="modal">
+
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    @{Html.RenderAction("ForgotPassword", "Account", FormMethod.Get);}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var header = $('body');
+
+        var backgrounds = new Array(
+            'url(https://media0.giphy.com/media/3oriO7A7bt1wsEP4cw/giphy.gif?cid=790b76115cb7647c2f6e6d6367fb7efd)'
+            , 'url(https://media.giphy.com/media/l378gW7GaWG6Leeas/giphy.gif)'
+            , 'url(https://media1.giphy.com/media/rM0wxzvwsv5g4/giphy.gif?cid=790b76115cb7644b4a38642e6b53749c)'
+            , 'url(https://media.giphy.com/media/7Je6xAM4Yq6fe6GvjC/giphy.gif)'
+            , 'url(https://media2.giphy.com/media/LZ2WRdQu8udNPSZxbg/giphy.gif?cid=790b76115cb763ee6766475849833599)'
+        );
+
+        var current = 0;
+
+        function nextBackground() {
+            current++;
+            current = current % backgrounds.length;
+            header.css('background-image', backgrounds[current]);
+        }
+        setInterval(nextBackground, 1400);
+
+        header.css('background-image', backgrounds[0]);
+    });
+</script>
+
+<script>
+    function displayToggle() {
+
+        // Get the modal
+        var modal = document.getElementById('myModal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("forgotBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks the button, open the modal
+        modal.style.display = "block";
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+</script>

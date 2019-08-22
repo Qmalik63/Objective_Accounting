@@ -1,0 +1,148 @@
+﻿@model AccountingApp.Models.NewAccountModel
+
+@{
+    ViewBag.Title = "New Account";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+<style>
+
+    .errorMsg {
+        margin-top: 0.25rem;
+        font-size: 80%;
+        color: #dc3545;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container shadow" style="width:70%; background-color:white">
+        <br />
+        <h4>New Account</h4>
+        <hr />
+        @Html.ValidationSummary(true, "The following errors were found:", new { @class = "text-danger" })
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="padding-left: 1rem" for="AccountNumber">Account Number</label>
+                    @*@Html.LabelFor(model => model.AccountNumber, htmlAttributes: new { @class = "control-label col-md-2" })*@
+
+                    @Html.EditorFor(model => model.AccountNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.AccountNumber, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @*@Html.LabelFor(model => model.AccountName, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                    <label style="padding-left: 1rem" for="AccountName">Account Name</label>
+
+                    @Html.EditorFor(model => model.AccountName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="padding-left: 1rem" for="AccountType">Account Type</label>
+                    @*@Html.LabelFor(model => model.AccountType, htmlAttributes: new { @class = "control-label col-md-2" })*@
+
+                    @*@Html.EditorFor(model => model.AccountType, new { htmlAttributes = new { @class = "form-control" } })*@
+                    <select name="AccountType" class="form-control" id="AccountType" value="@Request["AccountType"]">
+                        <option value="">Select..</option>
+
+                        <option value="Asset">Asset</option>
+                        <option value="Liability">Liability</option>
+                        <option value="Equity">Equity</option>
+                        <option value="Revenue">Revenue</option>
+                        <option value="Expense">Expense</option>
+
+                    </select>
+                    @Html.ValidationMessageFor(model => model.AccountType, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label style="padding-left: 1rem" for="BeginningBalance">Beginning Balance</label>
+                    @*@Html.LabelFor(model => model.OriginalBalance, htmlAttributes: new { @class = "control-label col-md-2" })*@
+
+                    @Html.EditorFor(model => model.OriginalBalance, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.OriginalBalance, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="padding-left: 1rem" for="Description">Account Description</label>
+            @*@Html.LabelFor(model => model.AccountDescription, htmlAttributes: new { @class = "control-label col-md-2" })*@
+
+            @*@Html.EditorFor(model => model.AccountDescription, new { htmlAttributes = new { @class = "form-control" } })*@
+            <textarea class="form-control" id="AccountDescription" rows="4" name="AccountDescription" placeholder="(optional)"></textarea>
+            @Html.ValidationMessageFor(model => model.AccountDescription, "", new { @class = "errorMsg" })
+
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Active, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Active)
+                    @Html.ValidationMessageFor(model => model.Active, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn btn-success" />
+                <a href="@Url.Action("ChartOfAccounts")" class="btn btn-warning">
+                    Cancel
+                </a>
+            </div>
+
+        </div>
+        <br />
+    </div>
+}
+
+
+<script>
+
+    // Restricts input for the given textbox to the given inputFilter.
+    function setInputFilter(textbox, inputFilter) {
+        ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function (event) {
+            textbox.addEventListener(event, function () {
+                if (inputFilter(this.value)) {
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                }
+            });
+        });
+    }
+
+    setInputFilter(document.getElementById("AccountNumber"), function (value) {
+        return /^\d*$/.test(value);
+    });
+
+    setInputFilter(document.getElementById("OriginalBalance"), function (value) {
+        return /^-?\d*[.,]?\d{0,2}$/.test(value);
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    window.onload = function () {
+        var username = '@Session["FirstNameofUser"]';
+        document.getElementById("LoggedName").innerHTML = "Welcome, " + username;
+    };
+
+</script>

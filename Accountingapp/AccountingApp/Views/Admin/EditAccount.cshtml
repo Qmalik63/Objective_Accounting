@@ -1,0 +1,149 @@
+﻿@model AccountingApp.Models.EditAccountModel
+
+@{
+    ViewBag.Title = "Edit Account";
+    Layout = "~/Views/Shared/_Layout_Admin.cshtml";
+}
+
+
+<style>
+
+    .errorMsg {
+        margin-top: 0.25rem;
+        font-size: 80%;
+        color: #dc3545;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container shadow" style="width:70%;background-color:white">
+        <br />
+        <h4>Edit Account</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @*@Html.LabelFor(model => model.AccountNumber, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                    <label style="padding-left: 1rem">Account Number</label>
+                    @Html.EditorFor(model => model.AccountNumber, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    @Html.ValidationMessageFor(model => model.AccountNumber, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @*@Html.LabelFor(model => model.AccountName, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                    <label style="padding-left: 1rem">Account Name</label>
+                    @Html.EditorFor(model => model.AccountName, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.AccountName, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @*@Html.LabelFor(model => model.AccountType, htmlAttributes: new { @class = "control-label col-md-2" })*@
+                    <label style="padding-left: 1rem">Account Type</label>
+                    @*@Html.EditorFor(model => model.AccountType, new { htmlAttributes = new { @class = "form-control" } })*@
+                    <select name="AccountType" class="form-control" id="AccountType">
+                        <option value="Asset">Asset</option>
+                        <option value="Liability">Liability</option>
+                        <option value="Equity">Equity</option>
+                        <option value="Revenue">Revenue</option>
+                        <option value="Expense">Expense</option>
+
+                    </select>
+                    @Html.ValidationMessageFor(model => model.AccountType, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @*@Html.LabelFor(model => model.AccountDescription, htmlAttributes: new { @class = "control-label col-md-2" })*@
+            <label style="padding-left: 1rem">Account Description</label>
+            @*<div class="col-md-10">*@
+            @*@Html.EditorFor(model => model.AccountDescription, new { htmlAttributes = new { @class = "form-control" } })*@
+            @Html.TextAreaFor(model => model.AccountDescription, new { @class = "form-control", @required = "required", @rows = "4" })
+            @Html.ValidationMessageFor(model => model.AccountDescription, "", new { @class = "errorMsg" })
+            @*</div>*@
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Active, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Active)
+                    @Html.ValidationMessageFor(model => model.Active, "", new { @class = "errorMsg" })
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-success" />
+                <a href="@Url.Action("ChartOfAccounts")" class="btn btn-warning">
+                    Cancel
+                </a>
+            </div>
+        </div>
+        <br />
+    </div>
+}
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        var username = '@Session["FirstNameofUser"]';
+        document.getElementById("LoggedName").innerHTML = "Welcome, " + username;
+
+        GetAccountType();
+
+    });
+
+    //window.onload = function () {
+
+    //};
+
+    function GetAccountType() {
+
+        var str = window.location.pathname;
+        var ID = str.replace("/Admin/EditAccount/", "");
+
+        var Query;
+
+        $.ajax(
+            {
+                url: '/Admin/GetAccountType/',
+                type: "GET",
+                async: false,
+                dataType: "json",
+                contentType: "application/json;",
+                data: { "id": ID },
+                success: function (result) {
+                    //alert(result);
+                    Query = result;
+
+                },
+                error: function (error) {
+                    //alert(JSON.stringify(error));
+                }
+            });
+
+        var Query2 = Query.replace(/"/g, "");
+
+        var dd = document.getElementById('AccountType');
+        for (var i = 0; i < dd.options.length; i++) {
+            if (dd.options[i].text === Query2) {
+                dd.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+</script>
+
